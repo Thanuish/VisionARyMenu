@@ -1,0 +1,21 @@
+{
+  "name": "VisionARyMenu.Editor",
+  "rootNamespace": "VisionARyMenu.Editor",
+  "references": [
+    "VisionARyMenu.Runtime",
+    "Unity.XR.ARCore.Editor",
+    "Unity.XR.Management",
+    "Unity.XR.Management.Editor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

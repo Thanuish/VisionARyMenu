@@ -1,0 +1,21 @@
+{
+  "name": "VisionARyMenu.PlayMode.Tests",
+  "rootNamespace": "MenuViewer.Tests.PlayMode",
+  "references": [
+    "VisionARyMenu.Runtime",
+    "Unity.XR.ARFoundation",
+    "Unity.XR.ARSubsystems"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}

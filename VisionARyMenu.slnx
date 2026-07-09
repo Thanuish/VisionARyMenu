@@ -1,0 +1,6 @@
+﻿<Solution>
+  <Project Path="VisionARyMenu.EditMode.Tests.csproj" />
+  <Project Path="VisionARyMenu.Runtime.csproj" />
+  <Project Path="VisionARyMenu.Editor.csproj" />
+  <Project Path="VisionARyMenu.PlayMode.Tests.csproj" />
+</Solution>

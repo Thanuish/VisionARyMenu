@@ -1,0 +1,20 @@
+{
+  "name": "VisionARyMenu.Runtime",
+  "rootNamespace": "MenuViewer",
+  "references": [
+    "Unity.InputSystem",
+    "Unity.XR.ARFoundation",
+    "Unity.XR.ARSubsystems",
+    "Unity.XR.CoreUtils",
+    "Unity.XR.Management"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

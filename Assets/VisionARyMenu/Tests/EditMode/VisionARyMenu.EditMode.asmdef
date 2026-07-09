@@ -1,0 +1,24 @@
+{
+  "name": "VisionARyMenu.EditMode.Tests",
+  "rootNamespace": "MenuViewer.Tests.EditMode",
+  "references": [
+    "VisionARyMenu.Runtime",
+    "Unity.InputSystem",
+    "Unity.XR.ARFoundation",
+    "Unity.XR.ARSubsystems"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "noEngineReferences": false
+}
