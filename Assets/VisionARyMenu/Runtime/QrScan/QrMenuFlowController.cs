@@ -7,55 +7,48 @@ using VisionARyMenu.UI;
 
 namespace VisionARyMenu.QrScan
 {
-    // Glues QR scanning -> remote menu fetch -> tappable list -> the existing (already
-    // verified) AR placement flow. State machine: Scanning -> Fetching -> ShowingMenu, after
-    // which ArFoodAnchorPresenter.SelectPendingItem/BeginSurfaceScan (already exercised in
-    // Phase 1) take over placement exactly as they did for the hardcoded stub dish.
+    // Loads the demo menu immediately at launch and shows the tappable list, skipping camera
+    // scanning entirely (QR decode of a dense embedded payload proved unreliable scanning off
+    // a monitor - see the feature/qr-scan-menu branch for that flow, kept intact for later).
+    // Everything downstream of the loaded FoodCatalog is unchanged: ArFoodAnchorPresenter.
+    // SelectPendingItem/BeginSurfaceScan is the same call MenuListScreen has always made.
     public sealed class QrMenuFlowController : MonoBehaviour
     {
-        private enum FlowState
-        {
-            Scanning,
-            Fetching,
-            ShowingMenu
-        }
+        // Same 4-dish menu that was going to be QR-encoded, loaded through the same
+        // RemoteMenuLoader.LoadFromQrPayload parsing path - only the trigger changed.
+        private const string BuiltInMenuJson = @"{
+            ""restaurantName"": ""Demo Bistro"",
+            ""items"": [
+                { ""id"": ""caesar_salad"", ""displayName"": ""Caesar Salad"", ""aliases"": [""caesar salad""], ""caloriesKcal"": 520, ""allergens"": [""Gluten"", ""Dairy"", ""Egg"", ""Fish""], ""dietTags"": [], ""defaultScaleMeters"": 0.12 },
+                { ""id"": ""chicken_ramen"", ""displayName"": ""Chicken Ramen"", ""aliases"": [""chicken ramen""], ""caloriesKcal"": 720, ""allergens"": [""Gluten"", ""Egg"", ""Soy""], ""dietTags"": [], ""defaultScaleMeters"": 0.12 },
+                { ""id"": ""chocolate_cake"", ""displayName"": ""Chocolate Cake"", ""aliases"": [""chocolate cake""], ""caloriesKcal"": 430, ""allergens"": [""Gluten"", ""Dairy"", ""Egg"", ""Nuts""], ""dietTags"": [""Vegetarian""], ""defaultScaleMeters"": 0.12 },
+                { ""id"": ""salmon_sushi"", ""displayName"": ""Salmon Sushi"", ""aliases"": [""salmon sushi""], ""caloriesKcal"": 410, ""allergens"": [""Fish"", ""Soy""], ""dietTags"": [], ""defaultScaleMeters"": 0.12 }
+            ]
+        }";
 
-        private ArQrScanService qrService;
         private RemoteMenuLoader menuLoader;
         private ArFoodAnchorPresenter presenter;
-        private QrScanScreen scanScreen;
         private MenuListScreen menuScreen;
-        private FlowState state;
 
-        public void Configure(ArQrScanService qrScanService, ArFoodAnchorPresenter anchorPresenter)
+        public void Configure(ArFoodAnchorPresenter anchorPresenter)
         {
-            qrService = qrScanService;
             presenter = anchorPresenter;
             menuLoader = gameObject.AddComponent<RemoteMenuLoader>();
 
             var canvasRoot = CreateCanvas();
-            scanScreen = QrScanScreen.Create(canvasRoot.transform);
             menuScreen = MenuListScreen.Create(canvasRoot.transform);
-            menuScreen.SetVisible(false);
             menuScreen.ItemTapped += HandleItemTapped;
 
             // Raw Input.touchCount-based presenter taps (tap-to-place/tap-to-remove) don't
             // automatically respect UGUI hit testing the way Button.onClick does, so without
-            // this a tap on a menu row would also register as a world tap underneath it -
-            // exactly what MenuViewer's IMGUI-era TapBlockedAt/IsGuiPointOverUi wiring guarded
-            // against, just via UGUI's EventSystem instead of a custom blocking-rect registry.
+            // this a tap on a menu row would also register as a world tap underneath it.
             presenter.TapBlockedAt = _ => IsPointerOverUi();
 
-            EnterScanning();
+            menuLoader.LoadFromQrPayload(BuiltInMenuJson, HandleMenuLoaded);
         }
 
         private void HandleItemTapped(string itemId)
         {
-            if (state != FlowState.ShowingMenu)
-            {
-                return;
-            }
-
             if (presenter.SelectPendingItem(itemId))
             {
                 presenter.BeginSurfaceScan();
@@ -63,37 +56,15 @@ namespace VisionARyMenu.QrScan
             }
         }
 
-        private void EnterScanning()
-        {
-            state = FlowState.Scanning;
-            menuScreen.SetVisible(false);
-            scanScreen.SetVisible(true);
-            scanScreen.HideRetry();
-            scanScreen.SetStatus("Point the camera at the table's QR code.");
-
-            qrService.QrCodeDecoded -= HandleQrCodeDecoded;
-            qrService.QrCodeDecoded += HandleQrCodeDecoded;
-            qrService.StartScanning();
-        }
-
-        private void HandleQrCodeDecoded(string payload)
-        {
-            state = FlowState.Fetching;
-            scanScreen.SetStatus("Loading menu...");
-            menuLoader.LoadFromQrPayload(payload, HandleMenuLoaded);
-        }
-
         private void HandleMenuLoaded(RemoteMenuLoader.Result result)
         {
             if (!result.success)
             {
-                scanScreen.ShowRetry(result.errorMessage, EnterScanning);
+                Debug.LogError("[QrMenuFlowController] Built-in menu failed to load: " + result.errorMessage);
                 return;
             }
 
-            state = FlowState.ShowingMenu;
             presenter.SetCatalog(result.catalog);
-            scanScreen.SetVisible(false);
             menuScreen.SetItems(result.restaurantName, result.catalog.Items);
             menuScreen.SetVisible(true);
         }

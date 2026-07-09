@@ -10,12 +10,12 @@ using VisionARyMenu.QrScan;
 
 namespace VisionARyMenu.Bootstrap
 {
-    // Builds the ported AR pipeline plus the QR-scan -> remote-menu -> tappable-list flow
-    // (QrMenuFlowController). The presenter starts against an empty catalog and only gets a
-    // real one once a QR-scanned menu URL has been fetched — see QrMenuFlowController for the
-    // scan/fetch/list state machine and ArFoodAnchorPresenter.SelectPendingItem/
-    // BeginSurfaceScan for how a tapped dish reaches the (already Phase-1-verified) placement
-    // flow.
+    // Builds the ported AR pipeline plus the demo-menu -> tappable-list flow
+    // (QrMenuFlowController). The presenter starts against an empty catalog and gets the real
+    // one immediately once QrMenuFlowController loads the built-in demo menu — see
+    // ArFoodAnchorPresenter.SelectPendingItem/BeginSurfaceScan for how a tapped dish reaches
+    // the (already Phase-1-verified) placement flow. QR-code scanning as the menu's entry
+    // point lives on the feature/qr-scan-menu branch.
     public static class VisionARyBootstrap
     {
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -69,8 +69,6 @@ namespace VisionARyMenu.Bootstrap
             var cameraManager = cameraObject.AddComponent<ARCameraManager>();
             cameraManager.autoFocusRequested = true;
             cameraObject.AddComponent<ARCameraBackground>();
-            // ArQrScanService requires ARCameraManager on the same GameObject.
-            var qrScanService = cameraObject.AddComponent<ArQrScanService>();
             TryConfigureEnvironmentDepth(cameraObject);
             origin.Camera = camera;
 
@@ -85,9 +83,9 @@ namespace VisionARyMenu.Bootstrap
             planeVisualizer.BindPlacement(anchorPresenter);
 
             var flowController = servicesObject.AddComponent<QrMenuFlowController>();
-            flowController.Configure(qrScanService, anchorPresenter);
+            flowController.Configure(anchorPresenter);
 
-            Debug.Log("[VisionARyBootstrap] Running: scan a table's QR code to load its menu.");
+            Debug.Log("[VisionARyBootstrap] Running: demo menu loaded, tap a dish to place it.");
         }
 
         private static FoodCatalog CreateEmptyCatalog()
