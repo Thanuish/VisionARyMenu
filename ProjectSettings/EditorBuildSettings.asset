@@ -9,5 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/VisionARyMenu.unity
     guid: 892ef7c72f0f4520a7a788575f7faa0b
   m_configObjects:
+    UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: c6f1db59680d7eb4fb9c4a3f7c7a213d, type: 2}
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: ce682586cb9bc804595dd22d7993c85f, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 7039c5dac99254b7a95151bfd5c7139d, type: 2}

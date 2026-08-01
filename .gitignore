@@ -27,3 +27,13 @@ CLAUDE.md
 *.zip
 *.lscache
 *.apk
+
+# Signing keys / secrets — never commit
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+.env
+.env.*
+secrets*.json
